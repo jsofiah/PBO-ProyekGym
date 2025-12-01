@@ -41,31 +41,31 @@ public class DashboardGym extends JFrame {
 
         header.add(titleContainer);
 
-        // Tab Menu
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
-        // === TAB FORM INSTRUKTUR ===
+        tabPane.addTab("Member Gym", createTabPanel("Buka Form Registrasi Member", () -> {
+            new FormMemberGym().setVisible(true);
+        }));
+
         tabPane.addTab("Instruktur Gym", createTabPanel("Buka Form Instruktur Gym", () -> {
             new FormInstrukturGym().setVisible(true);
         }));
 
-        // === TAB FORM MEMBER ===
-        tabPane.addTab("Member Gym", createTabPanel("Buka Form Registrasi Member", () -> {
-            JOptionPane.showMessageDialog(this, 
-                    "Form Member belum dibuat.\nTinggal hubungkan ke kelas form kamu.",
-                    "Info", JOptionPane.INFORMATION_MESSAGE);
-            // new FormMemberGym().setVisible(true);
-        }));
+        // tabPane.addTab("Jadwal Kelas Gym", createTabPanel("Buka Form Jadwal Gym", () -> {
+        //     new FormJadwalGym().setVisible(true);
+        // }));
 
-        // === TAB FORM JADWAL ===
-        tabPane.addTab("Jadwal Kelas Gym", createTabPanel("Buka Form Jadwal Gym", () -> {
-            // new FormJadwalGym().setVisible(true);
-        }));
-
-        // === TAB FORM PENDAFTARAN ===
         tabPane.addTab("Pendaftaran Kelas", createTabPanel("Buka Form Pendaftaran Kelas", () -> {
-            // new FormPendaftaranKelas().setVisible(true);
+            new FormPendaftaranKelas().setVisible(true);
+        }));
+
+        tabPane.addTab("Keahlian Gym", createTabPanel("Buka Form Keahlian Gym", () -> {
+            new FormKeahlianGym().setVisible(true);
+        }));
+
+        tabPane.addTab("Keahlian Instruktur", createTabPanel("Buka Form Keahlian Instruktur", () -> {
+            new FormInstrukturPilihKeahlian().setVisible(true);
         }));
 
         add(header, BorderLayout.NORTH);

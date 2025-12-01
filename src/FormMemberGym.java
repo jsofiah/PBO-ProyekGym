@@ -4,11 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.DefaultTableCellRenderer;
 
-public class FormMemberGym {
+public class FormMemberGym extends JFrame{
     private JFrame frame;
     private JTextField txtKodeMember, txtNama, txtUsia, txtNoHp;
     private JTextArea txtAlamat;
@@ -34,7 +34,9 @@ public class FormMemberGym {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            new FormMemberGym();
+            SwingUtilities.invokeLater(() -> {
+                new FormInstrukturGym().setVisible(true);
+            });
         });
     }
     
