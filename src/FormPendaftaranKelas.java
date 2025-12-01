@@ -1,10 +1,12 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+package src;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
-public class FormPendaftaranKelas {
+public class FormPendaftaranKelas extends JFrame {
     private JFrame frame;
     private JTextField txtIdPendaftaran, txtTanggalDaftar;
     private JComboBox<String> cbMember, cbKelas;
