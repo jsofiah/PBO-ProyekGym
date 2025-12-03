@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class FormPendaftaranKelas extends JFrame {
-    private JFrame frame;
     private JTextField txtIdPendaftaran, txtTanggalDaftar;
     private JComboBox<String> cbMember, cbKelas;
     private JTextArea txtCatatan;
@@ -26,11 +25,11 @@ public class FormPendaftaranKelas extends JFrame {
     }
 
     private void initialize() {
-        frame = new JFrame("Form Pendaftaran Kelas Gym");
-        frame.setSize(900, 600);
-        frame.setLayout(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setBackground(new Color(240, 240, 240));
+        setTitle("Form Pendaftaran Kelas Gym");
+        setSize(900, 600);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setBackground(new Color(240, 240, 240));
 
         // Panel Form Input
         JPanel panelForm = new JPanel();
@@ -38,7 +37,7 @@ public class FormPendaftaranKelas extends JFrame {
         panelForm.setBounds(20, 20, 400, 350);
         panelForm.setBorder(BorderFactory.createTitledBorder("Data Pendaftaran"));
         panelForm.setBackground(Color.WHITE);
-        frame.add(panelForm);
+        add(panelForm);
 
         // ID Pendaftaran
         JLabel lblId = new JLabel("ID Pendaftaran:");
@@ -96,7 +95,7 @@ public class FormPendaftaranKelas extends JFrame {
         panelButtons.setLayout(new GridLayout(3, 2, 10, 10));
         panelButtons.setBounds(20, 380, 400, 150);
         panelButtons.setBackground(new Color(240, 240, 240));
-        frame.add(panelButtons);
+        add(panelButtons);
 
         btnSimpan = new JButton("Simpan");
         btnSimpan.setBackground(new Color(46, 204, 113));
@@ -151,7 +150,7 @@ public class FormPendaftaranKelas extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(440, 20, 430, 510);
-        frame.add(scrollPane);
+        add(scrollPane);
 
         // Event Listeners
         btnSimpan.addActionListener(e -> simpanData());
@@ -161,7 +160,7 @@ public class FormPendaftaranKelas extends JFrame {
         btnReset.addActionListener(e -> resetForm());
         btnKeluar.addActionListener(e -> {
             closeConnection();
-            System.exit(0);
+            dispose();
         });
 
         table.addMouseListener(new MouseAdapter() {
@@ -185,18 +184,18 @@ public class FormPendaftaranKelas extends JFrame {
             }
         });
 
-        frame.setVisible(true);
+        setVisible(true);
     }
 
     private void connectDatabase() {
         try {
             conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/Proyek_Gym",
+                "jdbc:postgresql://localhost:5432/db_gym",
                 "postgres",
-                "12345"
+                "hione"
             );
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal koneksi database!\n" + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -216,7 +215,7 @@ public class FormPendaftaranKelas extends JFrame {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal load data member!\n" + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -236,7 +235,7 @@ public class FormPendaftaranKelas extends JFrame {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal load data kelas!\n" + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -271,7 +270,7 @@ public class FormPendaftaranKelas extends JFrame {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal load data tabel!\n" + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -280,7 +279,7 @@ public class FormPendaftaranKelas extends JFrame {
 
     private void simpanData() {
         if (cbMember.getSelectedItem() == null || cbKelas.getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Silakan pilih member dan kelas!", 
                 "Validasi", 
                 JOptionPane.WARNING_MESSAGE);
@@ -307,7 +306,7 @@ public class FormPendaftaranKelas extends JFrame {
             pstmt.executeUpdate();
             pstmt.close();
             
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Pendaftaran berhasil disimpan!", 
                 "Sukses", 
                 JOptionPane.INFORMATION_MESSAGE);
@@ -315,7 +314,7 @@ public class FormPendaftaranKelas extends JFrame {
             loadTableData();
             resetForm();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal menyimpan data!\n" + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -324,7 +323,7 @@ public class FormPendaftaranKelas extends JFrame {
 
     private void updateData() {
         if (txtIdPendaftaran.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Pilih data dari tabel terlebih dahulu!", 
                 "Validasi", 
                 JOptionPane.WARNING_MESSAGE);
@@ -355,7 +354,7 @@ public class FormPendaftaranKelas extends JFrame {
             pstmt.close();
             
             if (result > 0) {
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Data berhasil diupdate!", 
                     "Sukses", 
                     JOptionPane.INFORMATION_MESSAGE);
@@ -363,7 +362,7 @@ public class FormPendaftaranKelas extends JFrame {
                 resetForm();
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal update data!\n" + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -372,14 +371,14 @@ public class FormPendaftaranKelas extends JFrame {
 
     private void deleteData() {
         if (txtIdPendaftaran.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Pilih data dari tabel terlebih dahulu!", 
                 "Validasi", 
                 JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(frame, 
+        int confirm = JOptionPane.showConfirmDialog(this, 
             "Yakin ingin menghapus data ini?", 
             "Konfirmasi", 
             JOptionPane.YES_NO_OPTION);
@@ -396,7 +395,7 @@ public class FormPendaftaranKelas extends JFrame {
                 pstmt.close();
                 
                 if (result > 0) {
-                    JOptionPane.showMessageDialog(frame, 
+                    JOptionPane.showMessageDialog(this, 
                         "Data berhasil dihapus!", 
                         "Sukses", 
                         JOptionPane.INFORMATION_MESSAGE);
@@ -404,7 +403,7 @@ public class FormPendaftaranKelas extends JFrame {
                     resetForm();
                 }
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Gagal menghapus data!\n" + e.getMessage(), 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);

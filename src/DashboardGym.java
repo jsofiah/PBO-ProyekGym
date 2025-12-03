@@ -45,27 +45,39 @@ public class DashboardGym extends JFrame {
         tabPane.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
         tabPane.addTab("Member Gym", createTabPanel("Buka Form Registrasi Member", () -> {
-            new FormMemberGym().setVisible(true);
+            FormMemberGym f = new FormMemberGym();
+            f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            f.setVisible(true);
         }));
 
         tabPane.addTab("Instruktur Gym", createTabPanel("Buka Form Instruktur Gym", () -> {
-            new FormInstrukturGym().setVisible(true);
+            FormInstrukturGym frm = new FormInstrukturGym();
+            frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frm.setVisible(true);
         }));
 
-        // tabPane.addTab("Jadwal Kelas Gym", createTabPanel("Buka Form Jadwal Gym", () -> {
-        //     new FormJadwalGym().setVisible(true);
-        // }));
+        tabPane.addTab("Jadwal Kelas", createTabPanel("Buka Form Jadwal Gym", () -> {
+            FormJadwalKelas f = new FormJadwalKelas();
+            f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            f.setVisible(true);
+        }));
 
         tabPane.addTab("Pendaftaran Kelas", createTabPanel("Buka Form Pendaftaran Kelas", () -> {
-            new FormPendaftaranKelas().setVisible(true);
+            FormPendaftaranKelas f = new FormPendaftaranKelas();
+            f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            f.setVisible(true);
         }));
 
         tabPane.addTab("Keahlian Gym", createTabPanel("Buka Form Keahlian Gym", () -> {
-            new FormKeahlianGym().setVisible(true);
+            FormKeahlianGym f = new FormKeahlianGym();
+            f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            f.setVisible(true);
         }));
 
         tabPane.addTab("Keahlian Instruktur", createTabPanel("Buka Form Keahlian Instruktur", () -> {
-            new FormInstrukturPilihKeahlian().setVisible(true);
+            FormInstrukturPilihKeahlian f = new FormInstrukturPilihKeahlian();
+            f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            f.setVisible(true);
         }));
 
         add(header, BorderLayout.NORTH);

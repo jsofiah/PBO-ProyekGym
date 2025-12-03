@@ -9,7 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 public class FormMemberGym extends JFrame{
-    private JFrame frame;
     private JTextField txtKodeMember, txtNama, txtUsia, txtNoHp;
     private JTextArea txtAlamat;
     private JComboBox<String> cbJenisKelamin;
@@ -46,19 +45,19 @@ public class FormMemberGym extends JFrame{
     }
     
     private void initComponents() {
-        frame = new JFrame("Manajemen Data Member Gym");
-        frame.setSize(950, 700);
-        frame.setLayout(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.getContentPane().setBackground(LIGHT_GRAY);
+        setTitle("Manajemen Data Member Gym");
+        setSize(950, 700);
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        getContentPane().setBackground(LIGHT_GRAY);
         
         // Header Panel
         JPanel headerPanel = new JPanel();
         headerPanel.setBounds(0, 0, 950, 70);
         headerPanel.setBackground(PRIMARY_COLOR);
         headerPanel.setLayout(null);
-        frame.add(headerPanel);
+        add(headerPanel);
         
         JLabel lblTitle = new JLabel("MANAJEMEN MEMBER GYM");
         lblTitle.setBounds(20, 15, 500, 40);
@@ -75,7 +74,7 @@ public class FormMemberGym extends JFrame{
             BorderFactory.createLineBorder(new Color(189, 195, 199), 1),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        frame.add(panelForm);
+        add(panelForm);
         
         // Title form
         JLabel lblFormTitle = new JLabel("Form Data Member");
@@ -178,7 +177,7 @@ public class FormMemberGym extends JFrame{
         panelButton.setBounds(20, 420, 400, 100);
         panelButton.setLayout(new GridLayout(2, 3, 10, 10));
         panelButton.setBackground(LIGHT_GRAY);
-        frame.add(panelButton);
+        add(panelButton);
         
         btnSimpan = createStyledButton("Simpan", SUCCESS_COLOR);
         btnSimpan.addActionListener(e -> simpanData());
@@ -192,7 +191,7 @@ public class FormMemberGym extends JFrame{
         btnHapus.addActionListener(e -> hapusData());
         panelButton.add(btnHapus);
         
-        btnBatal = createStyledButton("↩Batal", WARNING_COLOR);
+        btnBatal = createStyledButton("Batal", WARNING_COLOR);
         btnBatal.addActionListener(e -> batalEdit());
         panelButton.add(btnBatal);
         
@@ -202,12 +201,12 @@ public class FormMemberGym extends JFrame{
         
         btnKeluar = createStyledButton("Keluar", DARK_GRAY);
         btnKeluar.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(frame, 
+            int confirm = JOptionPane.showConfirmDialog(this, 
                 "Apakah Anda yakin ingin keluar?", 
                 "Konfirmasi", 
                 JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                System.exit(0);
+                dispose();
             }
         });
         panelButton.add(btnKeluar);
@@ -221,7 +220,7 @@ public class FormMemberGym extends JFrame{
             BorderFactory.createLineBorder(new Color(189, 195, 199), 1),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        frame.add(panelTable);
+        add(panelTable);
         
         JLabel lblTableTitle = new JLabel("Data Member Terdaftar");
         lblTableTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -291,7 +290,7 @@ public class FormMemberGym extends JFrame{
         scrollTable.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199), 1));
         panelTable.add(scrollTable, BorderLayout.CENTER);
         
-        frame.setVisible(true);
+        setVisible(true);
     }
     
     private JButton createStyledButton(String text, Color bgColor) {
@@ -321,9 +320,9 @@ public class FormMemberGym extends JFrame{
     
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
-            "jdbc:postgresql://localhost:5433/gym_db",
+            "jdbc:postgresql://localhost:5432/db_gym",
             "postgres",
-            "iqo14july"
+            "hione"
         );
     }
     
@@ -350,7 +349,7 @@ public class FormMemberGym extends JFrame{
                 tableModel.addRow(row);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal memuat data!\n" + ex.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -360,7 +359,7 @@ public class FormMemberGym extends JFrame{
     
     private void simpanData() {
         if (txtKodeMember.getText().trim().isEmpty() || txtNama.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Kode Member dan Nama wajib diisi!", 
                 "Peringatan", 
                 JOptionPane.WARNING_MESSAGE);
@@ -371,14 +370,14 @@ public class FormMemberGym extends JFrame{
         try {
             usia = Integer.parseInt(txtUsia.getText().trim());
             if (usia < 10 || usia > 90) {
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Usia harus antara 10-90 tahun!", 
                     "Peringatan", 
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Usia harus berupa angka!", 
                 "Peringatan", 
                 JOptionPane.WARNING_MESSAGE);
@@ -398,7 +397,7 @@ public class FormMemberGym extends JFrame{
                 stmt.setString(6, txtAlamat.getText().trim());
                 stmt.executeUpdate();
                 
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Data berhasil disimpan!", 
                     "Sukses", 
                     JOptionPane.INFORMATION_MESSAGE);
@@ -415,7 +414,7 @@ public class FormMemberGym extends JFrame{
                 stmt.setInt(7, Integer.parseInt(selectedId));
                 stmt.executeUpdate();
                 
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Data berhasil diupdate!", 
                     "Sukses", 
                     JOptionPane.INFORMATION_MESSAGE);
@@ -425,7 +424,7 @@ public class FormMemberGym extends JFrame{
             loadDataToTable();
             
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Gagal menyimpan data!\n" + ex.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
@@ -435,7 +434,7 @@ public class FormMemberGym extends JFrame{
     
     private void editData() {
         if (selectedId == null) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Pilih data yang ingin diedit dari tabel!", 
                 "Peringatan", 
                 JOptionPane.WARNING_MESSAGE);
@@ -446,14 +445,14 @@ public class FormMemberGym extends JFrame{
     
     private void hapusData() {
         if (selectedId == null) {
-            JOptionPane.showMessageDialog(frame, 
+            JOptionPane.showMessageDialog(this, 
                 "Pilih data yang ingin dihapus dari tabel!", 
                 "Peringatan", 
                 JOptionPane.WARNING_MESSAGE);
             return;
         }
         
-        int confirm = JOptionPane.showConfirmDialog(frame, 
+        int confirm = JOptionPane.showConfirmDialog(this, 
             "Apakah Anda yakin ingin menghapus data ini?", 
             "Konfirmasi Hapus", 
             JOptionPane.YES_NO_OPTION);
@@ -466,7 +465,7 @@ public class FormMemberGym extends JFrame{
                 stmt.setInt(1, Integer.parseInt(selectedId));
                 stmt.executeUpdate();
                 
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Data berhasil dihapus!", 
                     "Sukses", 
                     JOptionPane.INFORMATION_MESSAGE);
@@ -475,7 +474,7 @@ public class FormMemberGym extends JFrame{
                 loadDataToTable();
                 
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(frame, 
+                JOptionPane.showMessageDialog(this, 
                     "Gagal menghapus data!\n" + ex.getMessage(), 
                     "Error", 
                     JOptionPane.ERROR_MESSAGE);

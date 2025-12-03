@@ -197,7 +197,7 @@ public class FormKeahlianGym extends JFrame {
                     "Konfirmasi Keluar", 
                     JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                System.exit(0);
+                dispose();
             }
         });
 

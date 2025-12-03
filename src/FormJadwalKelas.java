@@ -1,7 +1,5 @@
 package src;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
@@ -9,12 +7,14 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 // koneksi database
 class DBConnection {
-    private static final String URL = "jdbc:postgresql://localhost:5432/nama_db_kamu";
+    private static final String URL = "jdbc:postgresql://localhost:5432/db_gym";
     private static final String USER = "postgres";
-    private static final String PASS = "passwordmu";
+    private static final String PASS = "hione";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASS);
@@ -47,7 +47,7 @@ class Instruktur {
 }
 
 // model jadwal kelas
-class JadwalKelas {
+class JadwalKelas extends JFrame{
     private int idKelas;
     private String namaKelas;
     private String hari;
@@ -56,7 +56,7 @@ class JadwalKelas {
     private String namaInstruktur;
 
     public JadwalKelas(int idKelas, String namaKelas, String hari,
-                       Time jamKelas, int idInstruktur, String namaInstruktur) {
+            Time jamKelas, int idInstruktur, String namaInstruktur) {
         this.idKelas = idKelas;
         this.namaKelas = namaKelas;
         this.hari = hari;
@@ -65,28 +65,45 @@ class JadwalKelas {
         this.namaInstruktur = namaInstruktur;
     }
 
-    public int getIdKelas() { return idKelas; }
-    public String getNamaKelas() { return namaKelas; }
-    public String getHari() { return hari; }
-    public Time getJamKelas() { return jamKelas; }
-    public int getIdInstruktur() { return idInstruktur; }
-    public String getNamaInstruktur() { return namaInstruktur; }
+    public int getIdKelas() {
+        return idKelas;
+    }
+
+    public String getNamaKelas() {
+        return namaKelas;
+    }
+
+    public String getHari() {
+        return hari;
+    }
+
+    public Time getJamKelas() {
+        return jamKelas;
+    }
+
+    public int getIdInstruktur() {
+        return idInstruktur;
+    }
+
+    public String getNamaInstruktur() {
+        return namaInstruktur;
+    }
 }
 
-// dao jadwal kelas akses database 
+// dao jadwal kelas akses database
 class JadwalKelasDAO {
 
     public List<Instruktur> getAllInstruktur() {
         List<Instruktur> list = new ArrayList<>();
-        String sql = "SELECT id_instruktur, nama_instruktur FROM instruktur_gym ORDER BY nama_instruktur";
+        String sql = "SELECT id_instruktur, nama FROM instruktur_gym ORDER BY nama";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 int id = rs.getInt("id_instruktur");
-                String nama = rs.getString("nama_instruktur");
+                String nama = rs.getString("nama");
                 list.add(new Instruktur(id, nama));
             }
         } catch (SQLException e) {
@@ -101,14 +118,14 @@ class JadwalKelasDAO {
         List<JadwalKelas> list = new ArrayList<>();
 
         String sql = "SELECT j.id_kelas, j.nama_kelas, j.hari, j.jam_kelas, " +
-                "j.id_instruktur, i.nama_instruktur " +
+                "j.id_instruktur, i.nama " +
                 "FROM jadwal_kelas j " +
                 "JOIN instruktur_gym i ON j.id_instruktur = i.id_instruktur " +
                 "ORDER BY j.id_kelas";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 int idKelas = rs.getInt("id_kelas");
@@ -116,7 +133,7 @@ class JadwalKelasDAO {
                 String hari = rs.getString("hari");
                 Time jam = rs.getTime("jam_kelas");
                 int idInstruktur = rs.getInt("id_instruktur");
-                String namaInstruktur = rs.getString("nama_instruktur");
+                String namaInstruktur = rs.getString("nama");
 
                 list.add(new JadwalKelas(idKelas, namaKelas, hari, jam, idInstruktur, namaInstruktur));
             }
@@ -133,7 +150,7 @@ class JadwalKelasDAO {
                 "VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, namaKelas);
             ps.setString(2, hari);
@@ -148,12 +165,12 @@ class JadwalKelasDAO {
     }
 
     public void updateJadwal(int idKelas, String namaKelas, String hari,
-                             Time jamKelas, int idInstruktur) {
+            Time jamKelas, int idInstruktur) {
         String sql = "UPDATE jadwal_kelas SET nama_kelas=?, hari=?, jam_kelas=?, id_instruktur=? " +
                 "WHERE id_kelas=?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, namaKelas);
             ps.setString(2, hari);
@@ -172,7 +189,7 @@ class JadwalKelasDAO {
         String sql = "DELETE FROM jadwal_kelas WHERE id_kelas=?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, idKelas);
             ps.executeUpdate();
@@ -224,38 +241,43 @@ public class FormJadwalKelas extends JFrame {
         txtNamaKelas = new JTextField(20);
         txtJamKelas = new JTextField(10);
 
-        cbHari = new JComboBox<>(new String[]{
+        cbHari = new JComboBox<>(new String[] {
                 "Pilih Hari", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"
         });
 
         cbInstruktur = new JComboBox<>();
 
         // baris 0
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         panelInput.add(lblIdKelas, gbc);
         gbc.gridx = 1;
         panelInput.add(txtIdKelas, gbc);
 
         // baris 1
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         panelInput.add(lblNamaKelas, gbc);
         gbc.gridx = 1;
         panelInput.add(txtNamaKelas, gbc);
 
         // baris 2
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panelInput.add(lblHari, gbc);
         gbc.gridx = 1;
         panelInput.add(cbHari, gbc);
 
         // baris 3
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         panelInput.add(lblJamKelas, gbc);
         gbc.gridx = 1;
         panelInput.add(txtJamKelas, gbc);
 
         // baris 4
-        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         panelInput.add(lblInstruktur, gbc);
         gbc.gridx = 1;
         panelInput.add(cbInstruktur, gbc);
@@ -273,7 +295,7 @@ public class FormJadwalKelas extends JFrame {
         panelButton.add(btnBersih);
 
         // tabel
-        tableModel = new DefaultTableModel(new Object[]{
+        tableModel = new DefaultTableModel(new Object[] {
                 "ID Kelas", "Nama Kelas", "Hari", "Jam Kelas", "Instruktur"
         }, 0);
         tableJadwal = new JTable(tableModel);
@@ -328,7 +350,7 @@ public class FormJadwalKelas extends JFrame {
         tableModel.setRowCount(0);
         List<JadwalKelas> list = dao.getAllJadwal();
         for (JadwalKelas j : list) {
-            tableModel.addRow(new Object[]{
+            tableModel.addRow(new Object[] {
                     j.getIdKelas(),
                     j.getNamaKelas(),
                     j.getHari(),
@@ -338,7 +360,7 @@ public class FormJadwalKelas extends JFrame {
         }
     }
 
-    // validasi input form 
+    // validasi input form
     private boolean validateInput() {
         String namaKelas = txtNamaKelas.getText().trim();
         String hari = (String) cbHari.getSelectedItem();
@@ -385,7 +407,8 @@ public class FormJadwalKelas extends JFrame {
 
     // aksi tambah
     private void tambahJadwal() {
-        if (!validateInput()) return;
+        if (!validateInput())
+            return;
 
         String namaKelas = txtNamaKelas.getText().trim();
         String hari = (String) cbHari.getSelectedItem();
@@ -406,7 +429,8 @@ public class FormJadwalKelas extends JFrame {
             JOptionPane.showMessageDialog(this, "Pilih data di tabel yang akan diubah");
             return;
         }
-        if (!validateInput()) return;
+        if (!validateInput())
+            return;
 
         int idKelas = Integer.parseInt(txtIdKelas.getText().trim());
         String namaKelas = txtNamaKelas.getText().trim();
@@ -447,14 +471,14 @@ public class FormJadwalKelas extends JFrame {
         txtNamaKelas.setText("");
         cbHari.setSelectedIndex(0);
         txtJamKelas.setText("");
-        if (cbInstruktur.getItemCount() > 0) cbInstruktur.setSelectedIndex(0);
+        if (cbInstruktur.getItemCount() > 0)
+            cbInstruktur.setSelectedIndex(0);
     }
 
-    // main 
+    // main
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new FormJadwalKelas().setVisible(true);
         });
     }
 }
-

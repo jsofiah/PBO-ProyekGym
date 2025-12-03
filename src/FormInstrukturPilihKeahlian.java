@@ -172,7 +172,7 @@ public class FormInstrukturPilihKeahlian extends JFrame {
         JPanel tablePanel = new JPanel(new BorderLayout(0, 10));
         tablePanel.setBackground(LIGHT_BG);
         
-        JLabel lblTableTitle = new JLabel("📋 Data Keahlian Instruktur");
+        JLabel lblTableTitle = new JLabel("Data Keahlian Instruktur");
         lblTableTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
         
         tablePanel.add(lblTableTitle, BorderLayout.NORTH);
@@ -181,7 +181,7 @@ public class FormInstrukturPilihKeahlian extends JFrame {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(LIGHT_BG);
         
-        btnKeluar = createStyledButton("🚪 Keluar", new Color(52, 73, 94));
+        btnKeluar = createStyledButton("Keluar", new Color(52, 73, 94));
         btnKeluar.setPreferredSize(new Dimension(150, 40));
         bottomPanel.add(btnKeluar);
         
@@ -278,7 +278,7 @@ public class FormInstrukturPilihKeahlian extends JFrame {
                     "Konfirmasi Keluar", 
                     JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                System.exit(0);
+                dispose();
             }
         });
         
