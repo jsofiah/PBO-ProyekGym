@@ -130,30 +130,19 @@ public class FormInstrukturPilihKeahlian extends JFrame {
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setForeground(WHITE);
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40));
-        
+
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                JLabel label = (JLabel) super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
                 label.setHorizontalAlignment(JLabel.CENTER);
-                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-                label.setForeground(WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 15));
+                label.setForeground(Color.WHITE);
+                label.setOpaque(true);
+                label.setBackground(new Color(41, 128, 185));
                 return label;
-            }
-            
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                int w = getWidth();
-                int h = getHeight();
-                
-                GradientPaint gp = new GradientPaint(0, 0, new Color(41, 128, 185), w, 0, new Color(21, 67, 96));
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, w, h);
-                
-                super.paintComponent(g);
             }
         });
 
