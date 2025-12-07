@@ -381,9 +381,9 @@ public class FormInstrukturGym extends JFrame {
         int usia;
         try {
             usia = Integer.parseInt(usiaStr);
-            if (usia < 18 || usia > 70) {
+            if (usia < 16 || usia > 80) {
                 JOptionPane.showMessageDialog(this,
-                        "Usia instruktur harus antara 18-70 tahun!",
+                        "Usia instruktur harus antara 16-80 tahun!",
                         "Peringatan",
                         JOptionPane.WARNING_MESSAGE);
                 return;
@@ -460,9 +460,9 @@ public class FormInstrukturGym extends JFrame {
         int usia;
         try {
             usia = Integer.parseInt(usiaStr);
-            if (usia < 18 || usia > 70) {
+            if (usia < 16 || usia > 80) {
                 JOptionPane.showMessageDialog(this,
-                        "Usia instruktur harus antara 18-70 tahun!",
+                        "Usia instruktur harus antara 16-80 tahun!",
                         "Peringatan",
                         JOptionPane.WARNING_MESSAGE);
                 return;

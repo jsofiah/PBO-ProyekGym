@@ -12,32 +12,17 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 
 // koneksi database
-
 class DBConnection {
-    // URL database postgreSQL lokal
     private static final String URL = "jdbc:postgresql://localhost:5432/db_gym";
     private static final String USER = "postgres";
-    private static final String PASS = "1234"; 
+    private static final String PASS = "hione";
 
     public static Connection getConnection() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver"); 
-            return DriverManager.getConnection(URL, USER, PASS);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver PostgreSQL tidak ditemukan. Pastikan file .jar ada di classpath.", e);
-        } catch (SQLException e) {
-            // Ini akan menangkap FATAL: password authentication failed
-            JOptionPane.showMessageDialog(null, 
-                "Error Koneksi! Gagal koneksi database! Kemungkinan password salah.\nDetail: " + e.getMessage(), 
-                "Error Koneksi", 
-                JOptionPane.ERROR_MESSAGE);
-            throw e;
-        }
+        return DriverManager.getConnection(URL, USER, PASS);
     }
 }
 
-// MODEL
-
+// model instruktur
 class Instruktur {
     private int idInstruktur;
     private String namaInstruktur;
@@ -61,16 +46,16 @@ class Instruktur {
     }
 }
 
+// model jadwal kelas
 class JadwalKelas {
-    // ID Kelas string untuk fleksibilitas input manual
-    private String idKelas; 
+    private int idKelas;
     private String namaKelas;
     private String hari;
     private Time jamKelas;
     private int idInstruktur;
     private String namaInstruktur;
 
-    public JadwalKelas(String idKelas, String namaKelas, String hari,
+    public JadwalKelas(int idKelas, String namaKelas, String hari,
             Time jamKelas, int idInstruktur, String namaInstruktur) {
         this.idKelas = idKelas;
         this.namaKelas = namaKelas;
@@ -80,7 +65,7 @@ class JadwalKelas {
         this.namaInstruktur = namaInstruktur;
     }
 
-    public String getIdKelas() { 
+    public int getIdKelas() {
         return idKelas;
     }
 
@@ -105,13 +90,12 @@ class JadwalKelas {
     }
 }
 
-// DAO (DATA ACCESS OBJECT)
-
+// dao jadwal kelas akses database
 class JadwalKelasDAO {
 
     public List<Instruktur> getAllInstruktur() {
         List<Instruktur> list = new ArrayList<>();
-        String sql = "SELECT id_instruktur, nama FROM instruktur_gym ORDER BY nama"; 
+        String sql = "SELECT id_instruktur, nama FROM instruktur_gym ORDER BY nama";
 
         try (Connection conn = DBConnection.getConnection();
                 Statement st = conn.createStatement();
@@ -124,8 +108,9 @@ class JadwalKelasDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Pesan error sudah ditangani di DBConnection
+            JOptionPane.showMessageDialog(null, "Gagal load instruktur: " + e.getMessage());
         }
+
         return list;
     }
 
@@ -143,7 +128,7 @@ class JadwalKelasDAO {
                 ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                String idKelas = rs.getString("id_kelas"); 
+                int idKelas = rs.getInt("id_kelas");
                 String namaKelas = rs.getString("nama_kelas");
                 String hari = rs.getString("hari");
                 Time jam = rs.getTime("jam_kelas");
@@ -154,32 +139,29 @@ class JadwalKelasDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Pesan error sudah ditangani di DBConnection
+            JOptionPane.showMessageDialog(null, "Gagal load jadwal: " + e.getMessage());
         }
 
         return list;
     }
 
-    // Menambahkan String idKelas ke parameter dan query INSERT
-    public void insertJadwal(String idKelas, String namaKelas, String hari, Time jamKelas, int idInstruktur) throws SQLException {
-        String sql = "INSERT INTO jadwal_kelas(id_kelas, nama_kelas, hari, jam_kelas, id_instruktur) " +
-                "VALUES (?, ?, ?, ?, ?)";
+    public void insertJadwal(String namaKelas, String hari, Time jamKelas, int idInstruktur) throws SQLException {
+        String sql = "INSERT INTO jadwal_kelas(nama_kelas, hari, jam_kelas, id_instruktur) " +
+                "VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, idKelas); 
-            ps.setString(2, namaKelas);
-            ps.setString(3, hari);
-            ps.setTime(4, jamKelas);
-            ps.setInt(5, idInstruktur);
+            ps.setString(1, namaKelas);
+            ps.setString(2, hari);
+            ps.setTime(3, jamKelas);
+            ps.setInt(4, idInstruktur);
 
             ps.executeUpdate();
         }
     }
 
-    // Mengubah tipe data idKelas ke String di parameter dan query UPDATE
-    public void updateJadwal(String idKelas, String namaKelas, String hari,
+    public void updateJadwal(int idKelas, String namaKelas, String hari,
             Time jamKelas, int idInstruktur) throws SQLException {
         String sql = "UPDATE jadwal_kelas SET nama_kelas=?, hari=?, jam_kelas=?, id_instruktur=? " +
                 "WHERE id_kelas=?";
@@ -191,34 +173,32 @@ class JadwalKelasDAO {
             ps.setString(2, hari);
             ps.setTime(3, jamKelas);
             ps.setInt(4, idInstruktur);
-            ps.setString(5, idKelas); 
+            ps.setInt(5, idKelas);
 
             ps.executeUpdate();
         }
     }
 
-    // Mengubah tipe data idKelas ke String di parameter dan query DELETE
-    public void deleteJadwal(String idKelas) throws SQLException {
+    public void deleteJadwal(int idKelas) throws SQLException {
         String sql = "DELETE FROM jadwal_kelas WHERE id_kelas=?";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, idKelas); 
+            ps.setInt(1, idKelas);
             ps.executeUpdate();
         }
     }
 }
 
-// 4. form string utama
-
+// form jadwal kelas (swing)
 public class FormJadwalKelas extends JFrame {
 
     private JTextField txtIdKelas;
     private JTextField txtNamaKelas;
     private JTextField txtJamKelas;
     private JComboBox<String> cbHari;
-    private JComboBox<Instruktur> cbInstruktur; 
+    private JComboBox<Instruktur> cbInstruktur;
     private JTable tableJadwal;
     private DefaultTableModel tableModel;
 
@@ -280,8 +260,9 @@ public class FormJadwalKelas extends JFrame {
                 new EmptyBorder(20, 25, 20, 25)
         ));
 
-        // id kelas: diaktifkan untuk input
         txtIdKelas = createTextField();
+        txtIdKelas.setEditable(false);
+        txtIdKelas.setBackground(Color.LIGHT_GRAY);
         formPanel.add(createFormRow("ID Kelas:", txtIdKelas));
         formPanel.add(Box.createRigidArea(new Dimension(0, 12)));
 
@@ -473,7 +454,7 @@ public class FormJadwalKelas extends JFrame {
         
         return btn;
     }
-
+    
     private void setupEventHandlers() {
         btnSimpan.addActionListener(e -> simpanData());
         btnEdit.addActionListener(e -> editData());
@@ -518,12 +499,9 @@ public class FormJadwalKelas extends JFrame {
                     txtJamKelas.setText(jamStr);
 
                     String namaInstruktur = tableModel.getValueAt(row, 4).toString();
-                    
-                    // memastikan instruktur yang dipilih sesuai dengan nama di tabel
                     for (int i = 0; i < cbInstruktur.getItemCount(); i++) {
                         Instruktur ins = cbInstruktur.getItemAt(i);
-                        // cek null safety sebelum memanggil getNamaInstruktur
-                        if (ins != null && ins.getNamaInstruktur().equals(namaInstruktur)) {
+                        if (ins.getNamaInstruktur().equals(namaInstruktur)) {
                             cbInstruktur.setSelectedIndex(i);
                             break;
                         }
@@ -535,7 +513,6 @@ public class FormJadwalKelas extends JFrame {
 
     private void loadInstrukturToCombo() {
         cbInstruktur.removeAllItems();
-        cbInstruktur.addItem(null); // Tambahkan item null/kosong di indeks 0 untuk validasi
         List<Instruktur> list = dao.getAllInstruktur();
         for (Instruktur i : list) {
             cbInstruktur.addItem(i);
@@ -562,59 +539,44 @@ public class FormJadwalKelas extends JFrame {
     }
 
     private boolean validateInput() {
-        String idKelas = txtIdKelas.getText().trim();
         String namaKelas = txtNamaKelas.getText().trim();
         String hari = (String) cbHari.getSelectedItem();
         String jamText = txtJamKelas.getText().trim();
         Instruktur ins = (Instruktur) cbInstruktur.getSelectedItem();
 
-        // Validasi ID Kelas
-        if (idKelas.isEmpty()) { 
-            JOptionPane.showMessageDialog(this, "ID Kelas tidak boleh kosong!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
-            txtIdKelas.requestFocus();
-            return false;
-        }
-
         if (namaKelas.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nama kelas tidak boleh kosong!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
+                "Validasi", JOptionPane.WARNING_MESSAGE);
             txtNamaKelas.requestFocus();
             return false;
         }
 
         if (hari == null || hari.equals("Pilih Hari")) {
             JOptionPane.showMessageDialog(this, "Silakan pilih hari!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
+                "Validasi", JOptionPane.WARNING_MESSAGE);
             cbHari.requestFocus();
             return false;
         }
 
         if (jamText.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Jam kelas tidak boleh kosong!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
+                "Validasi", JOptionPane.WARNING_MESSAGE);
             txtJamKelas.requestFocus();
             return false;
         }
 
         try {
-            // format jam "08:30"
-            if (jamText.contains(".")) {
-                 jamText = jamText.replace('.', ':');
-                 txtJamKelas.setText(jamText); 
-            }
             LocalTime.parse(jamText);
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this, "Format jam harus HH:mm (contoh: 08:30)!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
+                "Validasi", JOptionPane.WARNING_MESSAGE);
             txtJamKelas.requestFocus();
             return false;
         }
 
-        // Validasi Instruktur dipilih
         if (ins == null) {
             JOptionPane.showMessageDialog(this, "Silakan pilih instruktur!",
-                    "Validasi", JOptionPane.WARNING_MESSAGE);
+                "Validasi", JOptionPane.WARNING_MESSAGE);
             cbInstruktur.requestFocus();
             return false;
         }
@@ -623,7 +585,7 @@ public class FormJadwalKelas extends JFrame {
     }
 
     private Time parseTime(String jamText) {
-        String full = jamText + ":00"; 
+        String full = jamText + ":00";
         return Time.valueOf(full);
     }
 
@@ -631,26 +593,24 @@ public class FormJadwalKelas extends JFrame {
         if (!validateInput()) return;
 
         try {
-            String idKelas = txtIdKelas.getText().trim(); 
             String namaKelas = txtNamaKelas.getText().trim();
             String hari = (String) cbHari.getSelectedItem();
             String jamText = txtJamKelas.getText().trim();
             Instruktur ins = (Instruktur) cbInstruktur.getSelectedItem();
 
             Time jam = parseTime(jamText);
-            
-            dao.insertJadwal(idKelas, namaKelas, hari, jam, ins.getIdInstruktur()); 
+            dao.insertJadwal(namaKelas, hari, jam, ins.getIdInstruktur());
 
             JOptionPane.showMessageDialog(this, 
-                    "Data jadwal berhasil disimpan!",
-                    "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                "Data jadwal berhasil disimpan!",
+                "Sukses", JOptionPane.INFORMATION_MESSAGE);
             
             loadDataJadwalToTable();
             btnReset.doClick();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, 
-                    "Gagal menyimpan data! Kemungkinan ID Kelas sudah ada atau SQL Error lain.\nDetail: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                "Gagal menyimpan data!\n" + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -673,15 +633,14 @@ public class FormJadwalKelas extends JFrame {
 
         if (konfirm == JOptionPane.YES_OPTION) {
             try {
-                String idKelas = txtIdKelas.getText().trim(); 
+                int idKelas = Integer.parseInt(txtIdKelas.getText().trim());
                 String namaKelas = txtNamaKelas.getText().trim();
                 String hari = (String) cbHari.getSelectedItem();
                 String jamText = txtJamKelas.getText().trim();
                 Instruktur ins = (Instruktur) cbInstruktur.getSelectedItem();
 
                 Time jam = parseTime(jamText);
-                
-                dao.updateJadwal(idKelas, namaKelas, hari, jam, ins.getIdInstruktur()); 
+                dao.updateJadwal(idKelas, namaKelas, hari, jam, ins.getIdInstruktur());
 
                 JOptionPane.showMessageDialog(this, 
                     "Data jadwal berhasil diupdate!",
@@ -717,9 +676,8 @@ public class FormJadwalKelas extends JFrame {
 
         if (konfirm == JOptionPane.YES_OPTION) {
             try {
-                String idKelas = txtIdKelas.getText().trim(); 
-                
-                dao.deleteJadwal(idKelas); 
+                int idKelas = Integer.parseInt(txtIdKelas.getText().trim());
+                dao.deleteJadwal(idKelas);
                 
                 JOptionPane.showMessageDialog(this, 
                     "Data jadwal berhasil dihapus!",
