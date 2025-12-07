@@ -18,14 +18,16 @@ CREATE TABLE instruktur_keahlian (
     id_instruktur   INT NOT NULL,
     id_keahlian     INT NOT NULL,
 
-    PRIMARY KEY (id_instruktur, id_keahlian),
+    CONSTRAINT pk_instruktur_keahlian PRIMARY KEY (id_instruktur, id_keahlian),
 
-    FOREIGN KEY (id_instruktur)
+    CONSTRAINT fk_instruktur_keahlian_instruktur
+        FOREIGN KEY (id_instruktur)
         REFERENCES instruktur_gym(id_instruktur)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
 
-    FOREIGN KEY (id_keahlian)
+    CONSTRAINT fk_instruktur_keahlian_keahlian
+        FOREIGN KEY (id_keahlian)
         REFERENCES keahlian_gym(id_keahlian)
         ON UPDATE CASCADE
         ON DELETE CASCADE
@@ -52,7 +54,8 @@ CREATE TABLE jadwal_kelas (
     jam_kelas       TIME NOT NULL,
     id_instruktur   INT NOT NULL,
 
-    FOREIGN KEY (id_instruktur)
+    CONSTRAINT fk_jadwal_instruktur
+        FOREIGN KEY (id_instruktur)
         REFERENCES instruktur_gym(id_instruktur)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
@@ -66,12 +69,14 @@ CREATE TABLE pendaftaran_kelas (
     tanggal_daftar  DATE NOT NULL DEFAULT CURRENT_DATE,
     catatan         TEXT,
 
-    FOREIGN KEY (id_member)
+    CONSTRAINT fk_pendaftaran_member
+        FOREIGN KEY (id_member)
         REFERENCES member_gym(id_member)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
 
-    FOREIGN KEY (id_kelas)
+    CONSTRAINT fk_pendaftaran_kelas
+        FOREIGN KEY (id_kelas)
         REFERENCES jadwal_kelas(id_kelas)
         ON UPDATE CASCADE
         ON DELETE CASCADE
